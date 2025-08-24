@@ -1,4 +1,4 @@
-const pairs = [
+const pairs = [ 
   ["001.png","002.png"],
   ["003.png","004.png"],
   ["005.png","006.png"],
@@ -11,16 +11,16 @@ const defaultBack = "000.png";
 
 let cards = [];
 let opened = [];
-let miss = 0;          // お手つき回数
-let stageFoundPairs = 0; // 現ステージで揃えたペア数
-let totalPairs = 0;    // 累積ツガイ数
-let combo = 0;         // 連続コンボ数
-let stage = 1;         // 現在のステージ
-let lock = false;      // 処理中ロック
+let miss = 0;         
+let stageFoundPairs = 0; 
+let totalPairs = 0;    
+let combo = 0;         
+let stage = 1;         
+let lock = false;      
 
 // --- ゲーム初期化 ---
 function initGame(newStage = false) {
-  lock = false; // 初期化時にロック解除
+  lock = false; 
 
   if (newStage) {
     stage++;
@@ -82,7 +82,7 @@ function flip(card) {
 
   if (opened.length === 2) {
     lock = true; 
-    setTimeout(checkMatch, 800);
+    setTimeout(checkMatch, 750);
   }
 }
 
@@ -105,13 +105,11 @@ function checkMatch() {
     combo = 0;
 
     if (miss === 3) {
+      // ゲームオーバー時は lock を解除せず、手動リトライ待ち
       const tempPairs = totalPairs;
-      setTimeout(() => {
-        alert(`ゲームオーバー！ ステージ${stage}　揃えたツガイ${tempPairs}`);
-        initGame(false);
-      }, 100);
+      showMessage(`ゲームオーバー！ ステージ${stage}　揃えたツガイ${tempPairs}`, null, 0); 
       opened = [];
-      lock = false;
+      lock = true;  
       return;
     } else {
       miss++;
@@ -124,13 +122,13 @@ function checkMatch() {
 
   // ステージクリア判定
   if (stageFoundPairs === 4) {
-    setTimeout(() => {
-      alert(`ステージ${stage}クリア！`);
-      initGame(true); // 新ステージへ
-    }, 100);
+    lock = true;
+    showMessage(`ステージ${stage}クリア！`, () => {
+      initGame(true); // 2秒後自動進行
+    }, 2000); 
+  } else {
+    lock = false;
   }
-
-  lock = false; 
 }
 
 // --- ツガイ判定 ---
@@ -140,8 +138,41 @@ function isPair(img1, img2) {
   );
 }
 
+// --- メッセージ表示 ---
+function showMessage(text, callback, duration = 2000) {
+  const existing = document.getElementById("messageBox");
+  if (existing) existing.remove(); // 古いメッセージ削除
+
+  const msg = document.createElement("div");
+  msg.id = "messageBox";
+  msg.style.position = "absolute";
+  msg.style.top = "50%";
+  msg.style.left = "50%";
+  msg.style.transform = "translate(-50%, -50%)";
+  msg.style.backgroundColor = "rgba(255,255,255,0.9)";
+  msg.style.padding = "20px";
+  msg.style.fontSize = "1.5rem";
+  msg.style.borderRadius = "10px";
+  msg.style.textAlign = "center";
+  msg.style.zIndex = 1000;
+  msg.textContent = text;
+  document.body.appendChild(msg);
+
+  if (duration > 0) {
+    setTimeout(() => {
+      msg.remove();
+      if (callback) callback();
+    }, duration);
+  } 
+}
+
 // --- リスタートボタン ---
-document.getElementById("restartBtn").addEventListener("click", () => initGame(false));
+document.getElementById("restartBtn").addEventListener("click", () => {
+  const msg = document.getElementById("messageBox");
+  if (msg) msg.remove();
+  lock = false;
+  initGame(false);
+});
 
 // --- ページ読み込み時に開始 ---
 window.onload = () => initGame(false);
