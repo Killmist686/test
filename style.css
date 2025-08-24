@@ -1,0 +1,84 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background-color: #fefcf0;
+}
+
+h1 {
+  margin: 20px 0;
+  font-size: 1.8em;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3列固定 */
+  justify-items: center;
+  gap: 12px; /* カード間のゆとり */
+  padding: 16px;
+  max-width: 360px; /* スマホ画面基準 */
+  margin: 0 auto;
+}
+
+.card {
+  width: 100%; /* 親の幅に合わせて拡大 */
+  aspect-ratio: 2/3; /* 高さを幅の1.5倍に固定 */
+  perspective: 600px;
+  cursor: pointer;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.card.flip .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+}
+
+.card-back img, .card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.card-front {
+  transform: rotateY(180deg);
+}
+
+button {
+  margin: 12px;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 6px;
+}
+
+#stageDisplay, #pairCount, #comboCount, #missCount {
+  font-size: 1.1em;
+  margin: 4px 0;
+}
+
+/* スマホ幅に応じてカード拡大 */
+@media (min-width: 400px) {
+  .board {
+    max-width: 400px;
+    gap: 14px;
+  }
+}
+
+@media (min-width: 600px) {
+  .board {
+    max
